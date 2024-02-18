@@ -10,10 +10,9 @@ import (
 )
 
 type Vote struct {
-	candidates      map[string]int
-	circonscription string
-	departement     string
-	nbVote          int
+	candidates  map[string]int
+	departement string
+	nbVote      int
 }
 
 func main() {
@@ -31,7 +30,7 @@ func main() {
 	firstLine := true
 	voteByCandidate := make(map[string]int)
 	voteByCandidateByDepartement := make(map[string]int)
-	rankingByCirconcription := make(map[string]int)
+	rankingByDepartement := make(map[string]int)
 	//Custom parsing for memory optimisations
 	for fileScanner.Scan() {
 		if firstLine {
@@ -44,7 +43,7 @@ func main() {
 			voteByCandidateByDepartement[candidateDepartementKey] += value
 			voteByCandidate[key] += value
 		}
-		rankingByCirconcription[vote.circonscription] += vote.nbVote
+		rankingByDepartement[vote.departement] += vote.nbVote
 		totalOfVote += vote.nbVote
 	}
 
@@ -54,7 +53,7 @@ func main() {
 
 	printVoteByCandidateByDepartement(voteByCandidateByDepartement)
 
-	printRankingByCirconscription(rankingByCirconcription)
+	printRankingByCirconscription(rankingByDepartement)
 
 }
 
@@ -73,16 +72,16 @@ func printVoteByCandidateByDepartement(voteByCandidateByDepartement map[string]i
 	}
 }
 
-func printRankingByCirconscription(rankingByCirconcription map[string]int) {
+func printRankingByCirconscription(rankingByDepartement map[string]int) {
 
-	ranking := make([]string, 0, len(rankingByCirconcription))
+	ranking := make([]string, 0, len(rankingByDepartement))
 
-	for key := range rankingByCirconcription {
+	for key := range rankingByDepartement {
 		ranking = append(ranking, key)
 	}
 
 	sort.SliceStable(ranking, func(i, j int) bool {
-		return rankingByCirconcription[ranking[i]] > rankingByCirconcription[ranking[j]]
+		return rankingByDepartement[ranking[i]] > rankingByDepartement[ranking[j]]
 	})
 
 	for i := 0; i < len(ranking); i++ {
@@ -95,7 +94,6 @@ func createEntryFromString(data string) Vote {
 	vote := &Vote{}
 	vote.candidates = parseCandidates(splitedData)
 	vote.departement = splitedData[1]
-	vote.circonscription = splitedData[3]
 	intVar, err := strconv.Atoi(splitedData[10])
 	if err != nil {
 		fmt.Print(err.Error())
